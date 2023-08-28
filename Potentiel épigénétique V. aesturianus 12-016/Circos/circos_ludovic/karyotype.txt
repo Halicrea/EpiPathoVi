@@ -1,8 +1,0 @@
-chr - 2018600001 contig_1 0 3050581 lgrey
-chr - 2018600002 contig_2 0 1122378 vvlgrey
-chr - 2018600003 contig_3 0 116097 vlgrey
-chr - 2018600004 contig_4 0 18326 vlgrey
-band 2018600001 No No 0 3050581 lgrey
-band 2018600002 No No 0 1122378 vvlgrey
-band 2018600003 No No 0 116097 vlgrey
-band 2018600004 No No 0 18326 vlgrey
