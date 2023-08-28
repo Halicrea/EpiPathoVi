@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+#PBS -q omp
+#PBS -l ncpus=48
+#PBS -l mem=64gb
+#PBS -l walltime=10:00:00
+######################################
+#		04/07/2023
+#		By Elyna Bouchereau
+######################################
+#######*	LOAD MODULES		*#####
+## Init and load base modules:
+#  Load CONDA
+. /appli/anaconda/latest/etc/profile.d/conda.sh 
+#  And then it's environment
+. /appli/bioinfo/trim-galore/0.6.7/env.sh
+
+echo "Test conda"
+conda list | head
+
+## Load packages:
+#  and tests the ones needed
+PARALLEL="/appli/GParallel/GP-20220722/bin/parallel"
+echo "Test packages from conda"
+#fastqc --version
+trim_galore --version
+#parallel --version
+
+#######*	DATA SELECTION		*#####
+## DATA location
+SEQ_RNA_FOLDER="$DATAWORK/Transcriptomic/SortMeRNA/SortMeRNA_OUT/"
+
+## SELECTING rRNA WORKING FOLDER
+
+
+export OUTPUT="$DATAWORK/Transcriptomic/TRIMMED_non-rRNA/"
+
+
+
+#######*	PROCESSING PIPELINE	*#####
+echo "#######* PROCESSING PIPELINE *#######"
+## Generation a folder to put work on
+
+echo "### TRIMING of the non rRNAs"
+
+find "$SEQ_RNA_FOLDER"/SortMeRNA_*_OUT/ -name '*_non-rRNA-reads.fq.gz' | 
+	${PARALLEL} -j 24 'Sample_name=$(echo "{}" | cut -d/ -f5 | cut -d_ -f1);
+		echo "Working on: ${Sample_name}";
+		trim_galore --illumina -q 30 --phred33 -j 2 --length 35 -o ${OUTPUT} --fastqc --fastqc_args "--outdir ${OUTPUT}/FastQC" --three_prime_clip_R1 1 --three_prime_clip_R2 1 "{}" &> ${Sample_name}_trimmed.log'
+
+## Turning back
+echo "### DONE --------------"
+

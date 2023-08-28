@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+#PBS -q omp
+#PBS -l ncpus=48
+#PBS -l mem=64gb
+#PBS -l walltime=10:00:00
+######################################
+#		04/07/2023
+#		By Elyna Bouchereau
+######################################
+#######*	LOAD MODULES		*#####
+## Init and load base modules:
+#  Load CONDA
+. /appli/anaconda/latest/etc/profile.d/conda.sh 
+#  And then it's environment
+#. /appli/bioinfo/sortmerna/4.2.0/env.sh
+conda activate bioinfo-ely-env
+
+echo "Test conda"
+conda list | head
+
+## Load packages:
+#  and tests the ones needed
+PARALLEL="/appli/GParallel/GP-20220722/bin/parallel"
+echo "Test packages from conda"
+#fastqc --version
+sortmerna --version
+#parallel --version
+
+#######*	DATA SELECTION		*#####
+## DATA location
+SEQ_RNA_FOLDER="$DATAWORK/EpiVib-RNAseq_Vibrio-aestu12-016_Sel-Cu_Agnes-TRAVERS/"
+## Going in working folder
+cd $DATAWORK/Transcriptomic/SortMeRNA
+
+## SELECTING rRNA DATABASE
+export DATABASE="$DATAWORK/Transcriptomic/SortMeRNA/SortMeRNA_DB/smr_v4.3_default_db.fasta"
+
+export OUTPUT="$DATAWORK/Transcriptomic/SortMeRNA/SortMeRNA_OUT"
+
+
+
+#######*	PROCESSING PIPELINE	*#####
+echo "#######* PROCESSING PIPELINE *#######"
+## Generation a folder to put work on
+
+echo "### Working with database: $DATABASE"
+
+find "$SEQ_RNA_FOLDER" -name '*.fastq.gz' | 
+	${PARALLEL} -j 24 'Sample_name=$(echo "{}" | cut -f 6 -d"/" | cut -f 1 -d"_");
+		echo "Working on: ${Sample_name} with ${DATABASE} database";
+		sortmerna --ref ${DATABASE} --reads "{}" --workdir ${OUTPUT}/SortMeRNA_${Sample_name}_OUT/ --idx-dir SortMeRNA_DB/ --aligned ${OUTPUT}/SortMeRNA_${Sample_name}_OUT/${Sample_name}_rRNA-reads --other ${OUTPUT}/SortMeRNA_${Sample_name}_OUT/${Sample_name}_non-rRNA-reads --fastx --threads 2'
+
+## Turning back
+echo "### DONE --------------"

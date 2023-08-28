@@ -1,0 +1,239 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+Test conda
+# packages in environment at /appli/conda-env/bioinfo/sortmerna-4.2.0:
+#
+# Name                    Version                   Build  Channel
+sortmerna                 4.2.0                         0    bioconda
+Test packages from conda
+
+[process:1369] === Options processing starts ... ===
+
+Found value: sortmerna
+Found flag: --version
+[process:1453] Processing option: version with value: 
+
+SortMeRNA version 4.2.0
+Build Date: Mar 12 2020
+sortmerna_build_git_sha:@e307e3a248c21ef70b9495f029cd86f61c33b7fd@
+sortmerna_build_git_date:@2020/03/12 12:34:30@
+#######* PROCESSING PIPELINE *#######
+mkdir: cannot create directory ‘/home1/datawork/eboucher/SortMeRNA/SortMeRNA_OUT’: File exists
+### /home1/datawork/eboucher/SortMeRNA/SortMeRNA_DB/smr_v4.3_default_db.fasta
+Working on: 34-3 with /home1/datawork/eboucher/SortMeRNA/SortMeRNA_DB/smr_v4.3_default_db.fasta database
+
+[process:1369] === Options processing starts ... ===
+
+Found value: sortmerna
+Found flag: --ref
+Found value: /home1/datawork/eboucher/SortMeRNA/SortMeRNA_DB/smr_v4.3_default_db.fasta of previous flag: --ref
+Found flag: --reads
+Found value: /home1/datawork/eboucher/EpiVib-RNAseq_Vibrio-aestu12-016_Sel-Cu_Agnes-TRAVERS/34-3_S11_L001_R1_001.fastq.gz of previous flag: --reads
+Found flag: --workdir
+Found value: /home1/datawork/eboucher/SortMeRNA/SortMeRNA_OUT/SortMeRNA_34-3_OUT/ of previous flag: --workdir
+Found flag: --idx
+Found value: SortmeRNA_DB/ of previous flag: --idx
+Found flag: --other
+Previous flag: --other is Boolean. Setting to True
+Found flag: --fastx
+[opt_workdir:1066] Using WORKDIR: ["/home1/datawork/eboucher/SortMeRNA/SortMeRNA_OUT/SortMeRNA_34-3_OUT/"] as specified
+[process:1453] Processing option: fastx with value: 
+[process:1453] Processing option: idx with value: SortmeRNA_DB/
+[opt_idx:1096] Using IDX dir: ["/home1/datawork/eboucher/SortMeRNA/SortmeRNA_DB/" as specified
+[process:1453] Processing option: other with value: 
+[opt_other:285] other was specified without argument. Will use default Directory and Prefix for the non-aligned output.
+[process:1453] Processing option: reads with value: /home1/datawork/eboucher/EpiVib-RNAseq_Vibrio-aestu12-016_Sel-Cu_Agnes-TRAVERS/34-3_S11_L001_R1_001.fastq.gz
+[opt_reads:73] Processing reads file [1] out of total [1] files
+[process:1453] Processing option: ref with value: /home1/datawork/eboucher/SortMeRNA/SortMeRNA_DB/smr_v4.3_default_db.fasta
+[opt_ref:166] Processing reference [1] out of total [1] references
+[opt_ref:220] File ["/home1/datawork/eboucher/SortMeRNA/SortMeRNA_DB/smr_v4.3_default_db.fasta"] exists and is readable
+
+[process:1473] === Options processing done ===
+
+[validate_kvdbdir:1252] Key-value DB location "/home1/datawork/eboucher/SortMeRNA/SortMeRNA_OUT/SortMeRNA_34-3_OUT/kvdb"
+[validate_kvdbdir:1288] Creating KVDB directory: "/home1/datawork/eboucher/SortMeRNA/SortMeRNA_OUT/SortMeRNA_34-3_OUT/kvdb"
+
+[0;31mERROR[0m: [validate_idxdir:1223] Failed creating IDX directory: ["/home1/datawork/eboucher/SortMeRNA/SortmeRNA_DB/"]
+
+Working on: 40-2 with /home1/datawork/eboucher/SortMeRNA/SortMeRNA_DB/smr_v4.3_default_db.fasta database
+
+[process:1369] === Options processing starts ... ===
+
+Found value: sortmerna
+Found flag: --ref
+Found value: /home1/datawork/eboucher/SortMeRNA/SortMeRNA_DB/smr_v4.3_default_db.fasta of previous flag: --ref
+Found flag: --reads
+Found value: /home1/datawork/eboucher/EpiVib-RNAseq_Vibrio-aestu12-016_Sel-Cu_Agnes-TRAVERS/40-2_S18_L001_R1_001.fastq.gz of previous flag: --reads
+Found flag: --workdir
+Found value: /home1/datawork/eboucher/SortMeRNA/SortMeRNA_OUT/SortMeRNA_40-2_OUT/ of previous flag: --workdir
+Found flag: --idx
+Found value: SortmeRNA_DB/ of previous flag: --idx
+Found flag: --other
+Previous flag: --other is Boolean. Setting to True
+Found flag: --fastx
+[opt_workdir:1066] Using WORKDIR: ["/home1/datawork/eboucher/SortMeRNA/SortMeRNA_OUT/SortMeRNA_40-2_OUT/"] as specified
+[process:1453] Processing option: fastx with value: 
+[process:1453] Processing option: idx with value: SortmeRNA_DB/
+[opt_idx:1096] Using IDX dir: ["/home1/datawork/eboucher/SortMeRNA/SortmeRNA_DB/" as specified
+[process:1453] Processing option: other with value: 
+[opt_other:285] other was specified without argument. Will use default Directory and Prefix for the non-aligned output.
+[process:1453] Processing option: reads with value: /home1/datawork/eboucher/EpiVib-RNAseq_Vibrio-aestu12-016_Sel-Cu_Agnes-TRAVERS/40-2_S18_L001_R1_001.fastq.gz
+[opt_reads:73] Processing reads file [1] out of total [1] files
+[process:1453] Processing option: ref with value: /home1/datawork/eboucher/SortMeRNA/SortMeRNA_DB/smr_v4.3_default_db.fasta
+[opt_ref:166] Processing reference [1] out of total [1] references
+[opt_ref:220] File ["/home1/datawork/eboucher/SortMeRNA/SortMeRNA_DB/smr_v4.3_default_db.fasta"] exists and is readable
+
+[process:1473] === Options processing done ===
+
+[validate_kvdbdir:1252] Key-value DB location "/home1/datawork/eboucher/SortMeRNA/SortMeRNA_OUT/SortMeRNA_40-2_OUT/kvdb"
+[validate_kvdbdir:1288] Creating KVDB directory: "/home1/datawork/eboucher/SortMeRNA/SortMeRNA_OUT/SortMeRNA_40-2_OUT/kvdb"
+
+[0;31mERROR[0m: [validate_idxdir:1223] Failed creating IDX directory: ["/home1/datawork/eboucher/SortMeRNA/SortmeRNA_DB/"]
+
+Working on: XS3 with /home1/datawork/eboucher/SortMeRNA/SortMeRNA_DB/smr_v4.3_default_db.fasta database
+
+[process:1369] === Options processing starts ... ===
+
+Found value: sortmerna
+Found flag: --ref
+Found value: /home1/datawork/eboucher/SortMeRNA/SortMeRNA_DB/smr_v4.3_default_db.fasta of previous flag: --ref
+Found flag: --reads
+Found value: /home1/datawork/eboucher/EpiVib-RNAseq_Vibrio-aestu12-016_Sel-Cu_Agnes-TRAVERS/XS3_S20_L001_R1_001.fastq.gz of previous flag: --reads
+Found flag: --workdir
+Found value: /home1/datawork/eboucher/SortMeRNA/SortMeRNA_OUT/SortMeRNA_XS3_OUT/ of previous flag: --workdir
+Found flag: --idx
+Found value: SortmeRNA_DB/ of previous flag: --idx
+Found flag: --other
+Previous flag: --other is Boolean. Setting to True
+Found flag: --fastx
+[opt_workdir:1066] Using WORKDIR: ["/home1/datawork/eboucher/SortMeRNA/SortMeRNA_OUT/SortMeRNA_XS3_OUT/"] as specified
+[process:1453] Processing option: fastx with value: 
+[process:1453] Processing option: idx with value: SortmeRNA_DB/
+[opt_idx:1096] Using IDX dir: ["/home1/datawork/eboucher/SortMeRNA/SortmeRNA_DB/" as specified
+[process:1453] Processing option: other with value: 
+[opt_other:285] other was specified without argument. Will use default Directory and Prefix for the non-aligned output.
+[process:1453] Processing option: reads with value: /home1/datawork/eboucher/EpiVib-RNAseq_Vibrio-aestu12-016_Sel-Cu_Agnes-TRAVERS/XS3_S20_L001_R1_001.fastq.gz
+[opt_reads:73] Processing reads file [1] out of total [1] files
+[process:1453] Processing option: ref with value: /home1/datawork/eboucher/SortMeRNA/SortMeRNA_DB/smr_v4.3_default_db.fasta
+[opt_ref:166] Processing reference [1] out of total [1] references
+[opt_ref:220] File ["/home1/datawork/eboucher/SortMeRNA/SortMeRNA_DB/smr_v4.3_default_db.fasta"] exists and is readable
+
+[process:1473] === Options processing done ===
+
+[validate_kvdbdir:1252] Key-value DB location "/home1/datawork/eboucher/SortMeRNA/SortMeRNA_OUT/SortMeRNA_XS3_OUT/kvdb"
+[validate_kvdbdir:1288] Creating KVDB directory: "/home1/datawork/eboucher/SortMeRNA/SortMeRNA_OUT/SortMeRNA_XS3_OUT/kvdb"
+
+[0;31mERROR[0m: [validate_idxdir:1223] Failed creating IDX directory: ["/home1/datawork/eboucher/SortMeRNA/SortmeRNA_DB/"]
+
+Working on: XS2 with /home1/datawork/eboucher/SortMeRNA/SortMeRNA_DB/smr_v4.3_default_db.fasta database
+
+[process:1369] === Options processing starts ... ===
+
+Found value: sortmerna
+Found flag: --ref
+Found value: /home1/datawork/eboucher/SortMeRNA/SortMeRNA_DB/smr_v4.3_default_db.fasta of previous flag: --ref
+Found flag: --reads
+Found value: /home1/datawork/eboucher/EpiVib-RNAseq_Vibrio-aestu12-016_Sel-Cu_Agnes-TRAVERS/XS2_S24_L001_R1_001.fastq.gz of previous flag: --reads
+Found flag: --workdir
+Found value: /home1/datawork/eboucher/SortMeRNA/SortMeRNA_OUT/SortMeRNA_XS2_OUT/ of previous flag: --workdir
+Found flag: --idx
+Found value: SortmeRNA_DB/ of previous flag: --idx
+Found flag: --other
+Previous flag: --other is Boolean. Setting to True
+Found flag: --fastx
+[opt_workdir:1066] Using WORKDIR: ["/home1/datawork/eboucher/SortMeRNA/SortMeRNA_OUT/SortMeRNA_XS2_OUT/"] as specified
+[process:1453] Processing option: fastx with value: 
+[process:1453] Processing option: idx with value: SortmeRNA_DB/
+[opt_idx:1096] Using IDX dir: ["/home1/datawork/eboucher/SortMeRNA/SortmeRNA_DB/" as specified
+[process:1453] Processing option: other with value: 
+[opt_other:285] other was specified without argument. Will use default Directory and Prefix for the non-aligned output.
+[process:1453] Processing option: reads with value: /home1/datawork/eboucher/EpiVib-RNAseq_Vibrio-aestu12-016_Sel-Cu_Agnes-TRAVERS/XS2_S24_L001_R1_001.fastq.gz
+[opt_reads:73] Processing reads file [1] out of total [1] files
+[process:1453] Processing option: ref with value: /home1/datawork/eboucher/SortMeRNA/SortMeRNA_DB/smr_v4.3_default_db.fasta
+[opt_ref:166] Processing reference [1] out of total [1] references
+[opt_ref:220] File ["/home1/datawork/eboucher/SortMeRNA/SortMeRNA_DB/smr_v4.3_default_db.fasta"] exists and is readable
+
+[process:1473] === Options processing done ===
+
+[validate_kvdbdir:1252] Key-value DB location "/home1/datawork/eboucher/SortMeRNA/SortMeRNA_OUT/SortMeRNA_XS2_OUT/kvdb"
+[validate_kvdbdir:1288] Creating KVDB directory: "/home1/datawork/eboucher/SortMeRNA/SortMeRNA_OUT/SortMeRNA_XS2_OUT/kvdb"
+[validate_idxdir:1233] IDX directory: "/home1/datawork/eboucher/SortMeRNA/SortmeRNA_DB/" exists and is not empty
+[validate_aligned_pfx:1307] Checking output directory: "/home1/datawork/eboucher/SortMeRNA/SortMeRNA_OUT/SortMeRNA_XS2_OUT/out"
+
+  Program:      SortMeRNA version 4.2.0
+  Copyright:    2016-2020 Clarity Genomics BVBA:
+                Turnhoutseweg 30, 2340 Beerse, Belgium
+                2014-2016 Knight Lab:
+                Department of Pediatrics, UCSD, La Jolla
+                2012-2014 Bonsai Bioinformatics Research Group:
+                LIFL, University Lille 1, CNRS UMR 8022, INRIA Nord-Europe
+  Disclaimer:   SortMeRNA comes with ABSOLUTELY NO WARRANTY; without even the
+                implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+                See the GNU Lesser General Public License for more details.
+  Contributors: Jenya Kopylova   jenya.kopylov@gmail.com
+                Laurent Noé      laurent.noe@lifl.fr
+                Pierre Pericard  pierre.pericard@lifl.fr
+                Daniel McDonald  wasade@gmail.com
+                Mikaël Salson    mikael.salson@lifl.fr
+                Hélène Touzet    helene.touzet@lifl.fr
+                Rob Knight       robknight@ucsd.edu
+
+[main:63] Running command:
+sortmerna --ref /home1/datawork/eboucher/SortMeRNA/SortMeRNA_DB/smr_v4.3_default_db.fasta --reads /home1/datawork/eboucher/EpiVib-RNAseq_Vibrio-aestu12-016_Sel-Cu_Agnes-TRAVERS/XS2_S24_L001_R1_001.fastq.gz --workdir /home1/datawork/eboucher/SortMeRNA/SortMeRNA_OUT/SortMeRNA_XS2_OUT/ --idx SortmeRNA_DB/ --other --fastx 
+Working on: XC3 with /home1/datawork/eboucher/SortMeRNA/SortMeRNA_DB/smr_v4.3_default_db.fasta database
+
+[process:1369] === Options processing starts ... ===
+
+Found value: sortmerna
+Found flag: --ref
+Found value: /home1/datawork/eboucher/SortMeRNA/SortMeRNA_DB/smr_v4.3_default_db.fasta of previous flag: --ref
+Found flag: --reads
+Found value: /home1/datawork/eboucher/EpiVib-RNAseq_Vibrio-aestu12-016_Sel-Cu_Agnes-TRAVERS/XC3_S9_L001_R1_001.fastq.gz of previous flag: --reads
+Found flag: --workdir
+Found value: /home1/datawork/eboucher/SortMeRNA/SortMeRNA_OUT/SortMeRNA_XC3_OUT/ of previous flag: --workdir
+Found flag: --idx
+Found value: SortmeRNA_DB/ of previous flag: --idx
+Found flag: --other
+Previous flag: --other is Boolean. Setting to True
+Found flag: --fastx
+[opt_workdir:1066] Using WORKDIR: ["/home1/datawork/eboucher/SortMeRNA/SortMeRNA_OUT/SortMeRNA_XC3_OUT/"] as specified
+[process:1453] Processing option: fastx with value: 
+[process:1453] Processing option: idx with value: SortmeRNA_DB/
+[opt_idx:1096] Using IDX dir: ["/home1/datawork/eboucher/SortMeRNA/SortmeRNA_DB/" as specified
+[process:1453] Processing option: other with value: 
+[opt_other:285] other was specified without argument. Will use default Directory and Prefix for the non-aligned output.
+[process:1453] Processing option: reads with value: /home1/datawork/eboucher/EpiVib-RNAseq_Vibrio-aestu12-016_Sel-Cu_Agnes-TRAVERS/XC3_S9_L001_R1_001.fastq.gz
+[opt_reads:73] Processing reads file [1] out of total [1] files
+[process:1453] Processing option: ref with value: /home1/datawork/eboucher/SortMeRNA/SortMeRNA_DB/smr_v4.3_default_db.fasta
+[opt_ref:166] Processing reference [1] out of total [1] references
+[opt_ref:220] File ["/home1/datawork/eboucher/SortMeRNA/SortMeRNA_DB/smr_v4.3_default_db.fasta"] exists and is readable
+
+[process:1473] === Options processing done ===
+
+[validate_kvdbdir:1252] Key-value DB location "/home1/datawork/eboucher/SortMeRNA/SortMeRNA_OUT/SortMeRNA_XC3_OUT/kvdb"
+[validate_kvdbdir:1288] Creating KVDB directory: "/home1/datawork/eboucher/SortMeRNA/SortMeRNA_OUT/SortMeRNA_XC3_OUT/kvdb"
+[validate_idxdir:1233] IDX directory: "/home1/datawork/eboucher/SortMeRNA/SortmeRNA_DB/" exists and is not empty
+[validate_aligned_pfx:1307] Checking output directory: "/home1/datawork/eboucher/SortMeRNA/SortMeRNA_OUT/SortMeRNA_XC3_OUT/out"
+
+  Program:      SortMeRNA version 4.2.0
+  Copyright:    2016-2020 Clarity Genomics BVBA:
+                Turnhoutseweg 30, 2340 Beerse, Belgium
+                2014-2016 Knight Lab:
+                Department of Pediatrics, UCSD, La Jolla
+                2012-2014 Bonsai Bioinformatics Research Group:
+                LIFL, University Lille 1, CNRS UMR 8022, INRIA Nord-Europe
+  Disclaimer:   SortMeRNA comes with ABSOLUTELY NO WARRANTY; without even the
+                implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+                See the GNU Lesser General Public License for more details.
+  Contributors: Jenya Kopylova   jenya.kopylov@gmail.com
+                Laurent Noé      laurent.noe@lifl.fr
+                Pierre Pericard  pierre.pericard@lifl.fr
+                Daniel McDonald  wasade@gmail.com
+                Mikaël Salson    mikael.salson@lifl.fr
+                Hélène Touzet    helene.touzet@lifl.fr
+                Rob Knight       robknight@ucsd.edu
+
+[main:63] Running command:
+sortmerna --ref /home1/datawork/eboucher/SortMeRNA/SortMeRNA_DB/smr_v4.3_default_db.fasta --reads /home1/datawork/eboucher/EpiVib-RNAseq_Vibrio-aestu12-016_Sel-Cu_Agnes-TRAVERS/XC3_S9_L001_R1_001.fastq.gz --workdir /home1/datawork/eboucher/SortMeRNA/SortMeRNA_OUT/SortMeRNA_XC3_OUT/ --idx SortmeRNA_DB/ --other --fastx 
+=>> PBS: job killed: walltime 29006 exceeded limit 28800
+Terminated

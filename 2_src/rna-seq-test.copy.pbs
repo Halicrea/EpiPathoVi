@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+#PBS -q omp
+#PBS -l ncpus=25
+#PBS -l mem=64gb
+#PBS -l walltime=02:00:00
+
+## Init and load base modules:
+source /usr/share/Modules/3.2.10/init/csh
+. /appli/anaconda/latest/etc/profile.d/conda.sh 
+
+conda activate env-PacBio
+
+## Load packages:
+. /appli/bioinfo/fastqc/0.11.9/env.sh
+PARALLEL="/appli/GParallel/GP-20220722/bin/parallel"
+
+SEQ_RNA_FOLDER="$DATAWORK/EpiVib-RNAseq_Vibrio-aestu12-016_Sel-Cu_Agnes-TRAVERS/"
+
+#fastqc on everything in parallel.
+mkdir FASTQC_OUT/
+
+find "$SEQ_RNA_FOLDER" -name '*.fastq.gz' | awk '{printf("fastqc \"%s\"\n", $0)}' | ${PARALLEL} -j 25 --verbose 2>&1 fasqc-test.log 
+# copies all the fastqc files to directory ./    
+find "$SEQ_RNA_FOLDER" -name '*fastqc.*' | xargs -I '{}' mv '{}' ./FASQC_OUT

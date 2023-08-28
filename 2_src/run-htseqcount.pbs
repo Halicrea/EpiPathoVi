@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+#PBS -q omp
+#PBS -l ncpus=30
+#PBS -l mem=32gb
+#PBS -l walltime=10:00:00
+######################################
+#		07/07/2023
+#		By Elyna Bouchereau
+######################################
+echo "#######* MAPPING PIPELINE *#######"
+#######*	LOAD MODULES		*#####
+## Init and load base modules:
+#  Load CONDA
+. /appli/anaconda/latest/etc/profile.d/conda.sh 
+#  And then it's environment
+conda activate bioinfo-ely-env
+echo "Test conda"
+conda list | head
+
+## Load packages:
+#  and tests the ones needed
+PARALLEL="/appli/GParallel/GP-20220722/bin/parallel"
+echo "Test packages from conda"
+#fastqc --version
+samtools --version
+#parallel --version
+
+#######*	DATA SELECTION		*#####
+## DATA location
+SEQ_RNA_FOLDER="$DATAWORK/TRIMMED/"
+## Going in working folder
+cd $DATAWORK/MAPPING
+
+## SELECTING rRNA DATABASE
+export DATABASE="$DATAWORK/Genome-Transcriptome/Vaestu-transcriptome_DB-RSEM"
+
+export OUTPUT="$DATAWORK/MAPPING"
+
+
+
+#######*	PROCESSING PIPELINE	*#####
+echo "#######* PROCESSING PIPELINE *#######"
+## Generation a folder to put work on
+echo "### $DATABASE"
+
+find "$SEQ_RNA_FOLDER" -name '*.sam' | 
+	${PARALLEL} -j 24 'Sample_name=$(echo "{}" | cut -f 7 -d"/" | cut -f 1 -d"_");
+		echo "Working on: ${Sample_name}";
+		salmon quant --index Genome-Transcriptome/transcripts_index -l A -r TRIMMED/15-1_S3_L001_R1_001_trimmed.fq.gz --validateMappings -o MAPPING/transcripts_quant'
+
+## Turning back
+echo "### DONE --------------"
+
+#awk 'NR==FNR{a[NR]=$5; next} {print a[FNR], $5}' 15-1_quant/quant.sf 15-2_quant/quant.sf

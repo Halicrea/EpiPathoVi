@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+#PBS -q omp
+#PBS -l ncpus=16
+#PBS -l mem=40gb
+#PBS -l walltime=4:00:00
+######################################
+#		06/07/2023
+#		By Elyna Bouchereau
+######################################
+echo "#######* MAPPING DATABASES *#######"
+#######*	LOAD MODULES		*#####
+## Init and load base modules:
+#  Load CONDA
+. /appli/anaconda/latest/etc/profile.d/conda.sh 
+#  And then it's environment
+conda activate bioinfo-ely-env
+echo "Test conda"
+conda list | head
+
+## Load packages:
+#  and tests the ones needed
+PARALLEL="/appli/GParallel/GP-20220722/bin/parallel"
+echo "Test packages from conda"
+#fastqc --version
+bowtie2 --version
+#parallel --version
+
+#######*	DATA SELECTION		*#####
+## DATA location
+SEQ_RNA_FOLDER="$DATAWORK/Transcriptomic/TRIMMED/"
+
+## SELECTING rRNA DATABASE
+export DATABASE="$DATAWORK/Transcriptomic/Genome-Transcriptome/"
+
+
+
+#######*	PROCESSING PIPELINE	*#####
+echo "#######* PROCESSING PIPELINE *#######"
+## Generation a folder to put work on
+echo "### $DATABASE"
+
+#bowtie2-build -f --threads 8  ${DATABASE} ${DATAWORK}/Transcriptomic/Genome-Transcriptome/Vaestu_transcriptome_DB
+
+rsem-prepare-reference --gtf ${DATABASE}/Vaestu12016-Contigs.gtf \
+	${DATABASE}/Vaestu12016-Contigs-1line.fasta \
+	--bowtie2 \
+	-p 16 \
+	${DATAWORK}/Transcriptomic/Genome-Transcriptome/Vaestu_DB-RSEM
+	
+
+#STAR --runThreadN 16 --runMode genomeGenerate --genomeDir ${DATABASE} --genomeFastaFiles ${DATABASE}/VAESTLR12016.1-Contigs.fasta --sjdbGFFfile ${DATABASE}/VAESTLR12016.1-Contigs.gff --sjdbGTFtagExonParentTranscript Parent --sjdbOverhang 74
+
+echo "### DONE."

@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+#PBS -q omp
+#PBS -l ncpus=48
+#PBS -l mem=100gb
+#PBS -l walltime=30:00:00
+######################################
+#		26/07/2023
+#		By Elyna Bouchereau
+######################################
+echo "#######* PACBIO PIPELINE *#######"
+#######*	LOAD MODULES		*#####
+## Init and load base modules:
+#  Load CONDA
+. /appli/anaconda/latest/etc/profile.d/conda.sh 
+#  And then it's environment
+conda activate smrt-env
+
+## Load packages:
+#  and tests the ones needed
+PARALLEL="/appli/GParallel/GP-20220722/bin/parallel"
+SMRTCMDS="$DATAWORK/Epigenetic/smrtlink/smrtcmds/bin"
+echo "Test packages from smrtlink"
+$SMRTCMDS/pbmm2 --version
+$SMRTCMDS/ipdSummary --version
+$SMRTCMDS/motifMaker -h
+
+#######*	DATA SELECTION		*#####
+## DATA location
+#SEQ_DNA_FOLDER="$DATAWORK/EpiVib-Sequencage-PacBIO-EMseq_V-aestuarianus_MARS/SMRT"
+SEQ_DNA_FOLDER="$SCRATCH/TMP"
+## Going in working folder
+
+
+## SELECTING rRNA DATABASE
+#export DATABASE="$DATAWORK/Transcriptomic/Genome-Transcriptome/Vaestu-transcriptome_DB-RSEM"
+export OUTPUT="$SCRATCH/TMP/SMRT_OUT"
+#if [ ! -d "$OUTPUT" ] then
+#	mkdir $OUTPUT
+#fi
+
+#######*	PROCESSING PIPELINE	*#####
+echo "#######* PROCESSING PIPELINE *#######"
+## Generation a folder to put work on
+echo "### Working on subreads_demux.bc2038--bc2038.bam"
+echo "##  Launching pbmm2: align to a reference"
+#$SMRTCMDS/pbmm2 align $DATAWORK/Epigenetic/Vaestu12016.1-Contigs.mmi ${SEQ_DNA_FOLDER}/subreads_demux.bc2037--bc2037.bam ${OUTPUT}/ref12016.bc2037tot.bam --log-level INFO --preset HIFI --sort -j 48
+echo "already done"
+echo "##  Launching ipdSummary: detects DNA base-modifications"
+#$SMRTCMDS/pbindex ${OUTPUT}/ref12016.bc2037tot.bam
+$SMRTCMDS/ipdSummary ${OUTPUT}/ref12016.bc2038.bam --reference $DATAWORK/Transcriptomic/Genome-Transcriptome/VAESTLR12016.1-Contigs.fasta --identify m6A,m4C --gff ${OUTPUT}/basemode.bc2038.gff --csv kinetics.bc2038.csv
+
+
+## FINISHING
+echo "###~DONE ----"
+
+
+#$SMRTCMDS/motifMaker --fasta $DATAWORK/Transcriptomic/Genome-Transcriptome/VAESTLR12016.1-Contigs.fasta --gff $SCRATCH/TMP/SMRT_OUT/basemode.bc2037.gff --minScore 30 -o $SCRATCH/TMP/SMRT_OUT/motifs.bc2037.csv --xml $SCRATCH/TMP/SMRT_OUT/motifs.bc2037.xml find

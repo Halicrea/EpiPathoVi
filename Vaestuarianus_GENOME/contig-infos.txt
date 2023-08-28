@@ -1,0 +1,8 @@
+>2018600001 Vibrio aestuarianus 12_016, WGS linear, contig 1, whole genome shotgun
+3050581
+>2018600002 Vibrio aestuarianus 12_016, WGS linear, contig 2, whole genome shotgun
+1122378
+>2018600003 Vibrio aestuarianus 12_016, WGS linear, contig 3, whole genome shotgun
+116097
+>2018600004 Vibrio aestuarianus 12_016, WGS linear, contig 4, whole genome shotgun
+18326

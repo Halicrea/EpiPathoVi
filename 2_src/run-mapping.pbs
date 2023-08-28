@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+#PBS -q omp
+#PBS -l ncpus=56
+#PBS -l mem=80gb
+#PBS -l walltime=10:00:00
+######################################
+#		06/07/2023
+#		By Elyna Bouchereau
+######################################
+echo "#######* MAPPING PIPELINE *#######"
+#######*	LOAD MODULES		*#####
+## Init and load base modules:
+#  Load CONDA
+. /appli/anaconda/latest/etc/profile.d/conda.sh 
+#  And then it's environment
+conda activate bioinfo-ely-env
+echo "Test conda"
+conda list | head
+
+## Load packages:
+#  and tests the ones needed
+PARALLEL="/appli/GParallel/GP-20220722/bin/parallel"
+echo "Test packages from conda"
+#fastqc --version
+bowtie2 --version
+#parallel --version
+
+#######*	DATA SELECTION		*#####
+## DATA location
+SEQ_RNA_FOLDER="$DATAWORK/Transcriptomic/TRIMMED_non-rRNA/"
+## Going in working folder
+
+
+## SELECTING rRNA DATABASE
+export DATABASE="$DATAWORK/Transcriptomic/Genome-Transcriptome/Vaestu-transcriptome_DB-RSEM"
+
+export OUTPUT="$DATAWORK/Transcriptomic/MAPPING_non-rRNA/"
+
+
+
+#######*	PROCESSING PIPELINE	*#####
+echo "#######* PROCESSING PIPELINE *#######"
+## Generation a folder to put work on
+echo "### $DATABASE"
+
+
+#rsem-calculate-expression --bowtie2 -p 8 --append-names --output-genome-bam $DATAWORK/Transcriptomic/15-1_S3_L001_R1_001_trimmed.fq.gz  ${DATAWORK}/Transcriptomic/Genome-Transcriptome/Vaestu-transcriptome_DB-RSEM 15-1S
+find "$SEQ_RNA_FOLDER" -name '*.fq.gz' | 
+	${PARALLEL} -j 7 'Sample_name=$(echo "{}" | cut -f 7 -d"/" | cut -f 1 -d"_");
+		echo "Working on: ${Sample_name} with ${DATABASE} database";
+		bowtie2 -x ${DATABASE} -U "{}" -S "{}.sam" -p 8'
+# rsem-calculate-expression --bowtie2 -p 8 --append-names --output-genome-bam "{}" ${DATABASE} ${Sample_name}
+
+#bowtie2 -x ${DATABASE} -U 15-1_S3_L001_R1_001_trimmed.fq.gz,15-2_S6_L001_R1_001_trimmed.fq.gz,15-3_S10_L001_R1_001_trimmed.fq.gz,22-1_S14_L001_R1_001_trimmed.fq.gz,22-2_S17_L001_R1_001_trimmed.fq.gz,22-3_S21_L001_R1_001_trimmed.fq.gz,34-1_S4_L001_R1_001_trimmed.fq.gz,34-2_S7_L001_R1_001_trimmed.fq.gz,34-3_S11_L001_R1_001_trimmed.fq.gz,40-1_S15_L001_R1_001_trimmed.fq.gz,40-2_S18_L001_R1_001_trimmed.fq.gz,40-3_S22_L001_R1_001_trimmed.fq.gz,XC1_S2_L001_R1_001_trimmed.fq.gz,XC2_S5_L001_R1_001_trimmed.fq.gz,XC3_S9_L001_R1_001_trimmed.fq.gz,XM1_S12_L001_R1_001_trimmed.fq.gz,XM2_S16_L001_R1_001_trimmed.fq.gz,XM3_S19_L001_R1_001_trimmed.fq.gz,XS1_S13_L001_R1_001_trimmed.fq.gz,XS2_S24_L001_R1_001_trimmed.fq.gz,XS3_S20_L001_R1_001_trimmed.fq.gz,XT1_S1_L001_R1_001_trimmed.fq.gz,XT3_S8_L001_R1_001_trimmed.fq.gz -S ${OUTPUT}/bowtie2.test.sam
+
+## Turning back

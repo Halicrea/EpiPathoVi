@@ -1,0 +1,556 @@
+---
+title: "Analyse transcriptomique de V. aestu"
+author: "Elyna Bouchereau"
+date: "2023-07-17"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F, dpi=300, fig.width=6, fig.height=8,include=TRUE)
+```
+
+```{r, include=FALSE}
+# **********************************************************************
+#                           Set arguments                            ----
+# **********************************************************************
+#args = commandArgs(trailingOnly=TRUE)
+
+# **********************************************************************
+#                           Load libraries                          ----
+# **********************************************************************
+list.of.packages <- c(
+  "DESeq2",
+  "ggplot2",
+  "pheatmap",
+  "RColorBrewer",
+  "vsn",
+  "gplots",
+  "ggrepel",
+  "grid"
+)
+
+# Load the packages
+for(package.i in list.of.packages){
+  suppressPackageStartupMessages(library(
+    package.i,
+    character.only = T
+  ))
+}
+
+# **********************************************************************
+#                       Define global functions                      ----
+# **********************************************************************
+plot.volcano <- function(de){
+  #Convert directly in the aes()
+  p <- ggplot(data=de, aes(x=log2FoldChange, y=-log10(pvalue))) + geom_point()
+  # Add more simple "theme"
+  p <- ggplot(data=de, aes(x=log2FoldChange, y=-log10(pvalue))) + geom_point() + theme_minimal()
+  # Add vertical lines for log2FoldChange thresholds, and one horizontal line for the p-value threshold 
+  p2 <- p + geom_vline(xintercept=c(-1, 1), col="red") +
+    geom_hline(yintercept=-log10(0.05), col="red")
+  
+  # The significantly differentially expressed genes are the ones found in the upper-left and upper-right corners.
+  # Add a column to the data frame to specify if they are UP- or DOWN- regulated (log2FoldChange respectively positive or negative)
+  
+  # add a column of NAs
+  de$diffexpressed <- "NO"
+  # if log2Foldchange > 0.6 and pvalue < 0.05, set as "UP" 
+  de$diffexpressed[de$log2FoldChange > 0.6 & de$padj < 0.05] <- "UP"
+  # if log2Foldchange < -0.6 and pvalue < 0.05, set as "DOWN"
+  de$diffexpressed[de$log2FoldChange < -0.6 & de$padj < 0.05] <- "DOWN"
+  
+  # Re-plot but this time color the points with "diffexpressed"
+  p <- ggplot(data=de, aes(x=log2FoldChange, y=-log10(pvalue), col=diffexpressed)) + geom_point() + theme_minimal()
+  
+  # Add lines as before...
+  p2 <- p + geom_vline(xintercept=c(-1, 1), col="red") +
+    geom_hline(yintercept=-log10(0.05), col="red")
+  ## Change point color 
+  
+  # 1. by default, it is assigned to the categories in an alphabetical order):
+  p3 <- p2 + scale_color_manual(values=c("blue", "green", "red"))
+  
+  # 2. to automate a bit: ceate a named vector: the values are the colors to be used, the names are the categories they will be assigned to:
+  mycolors <- c("blue", "red", "black")
+  names(mycolors) <- c("DOWN", "UP", "NO")
+  p3 <- p2 + scale_colour_manual(values = mycolors)
+  # Now write down the name of genes beside the points...
+  # Create a new column "delabel" to de, that will contain the name of genes differentially expressed (NA in case they are not)
+  de$delabel <- NA
+  if(!is.null(de$gene_symbol[de$diffexpressed != "NO"])){
+    de$delabel[de$diffexpressed != "NO"] <- de$gene_symbol[de$diffexpressed != "NO"]
+  }
+  
+  
+  # plot adding up all layers we have seen so far
+  p4<-ggplot(data=de, aes(x=log2FoldChange, y=-log10(pvalue), col=diffexpressed, label=delabel)) +
+    geom_point() + 
+    theme_minimal() +
+    geom_text_repel() +
+    scale_color_manual(values=c("darkorchid1","grey", "deeppink1")) #+
+    #geom_vline(xintercept=c(-1, 1), col="red") +
+    #geom_hline(yintercept=-log10(0.05), col="red")
+  genes_padj<-row.names(de)[sort(de$padj) <= 0.05]
+  
+  return(p4)
+}
+# **********************************************************************
+#                    _________MAIN SCRIPT__________                 ----
+# **********************************************************************
+setwd("C:/Users/eboucher/Dropbox/M2 Ifremer Elyna Bouchereau/bioinfo_epivib_gitlab_m2-elynab")
+#### - 0. Loading data ----
+data_count <- read.table("Transcriptomic/DESEQ2_QT_rawbis.tsv",sep = "\t",
+                         header = T, row.names = 1)
+
+## Sample infos
+infos <- read.table("Transcriptomic/infos_samples.tsv",
+                    sep = "\t", header = T, row.names = 1)
+```
+
+```{r,include=FALSE}
+##############################################
+
+## Checking name between the 2 dataframe
+all(colnames(data_count) %in% rownames(infos))
+
+## Are they in the same order
+all(colnames(data_count) == rownames(infos))
+##############################################
+```
+
+## Analyse globale des données transcriptomiques
+
+```{r}
+#### II. Analyse pour les incompatibles ----
+#### - 1. On construit la matrice pour Deseq2 ----
+data_count.tmp <- sapply(data_count, round)
+data_count.int <- data.frame(data_count.tmp)
+data_count.int <- sapply(data_count.int, as.integer)
+colnames(data_count.int) <- colnames(data_count)
+row.names(data_count.int) <- row.names(data_count)
+dds<-DESeqDataSetFromMatrix(countData = data_count.int,
+                       colData = infos,
+                       design = ~ Condition)
+dds # 4161  genes
+## pre-filtering: removing rows with low gene counts
+# keeping rows that have a least 10 reads total
+keep <- rowSums(counts(dds)) >= 10
+dds <- dds[keep,]
+dds # 4076   genes
+
+```
+
+```{r,include=FALSE}
+### - 2.  Run DESeq ----
+dds <- DESeq(dds)
+```
+
+```{r,fig.width=7, fig.height=7}
+### - 3. Explore results ---
+
+res_salt15 <- results(dds,alpha = 0.05, independentFiltering = T,
+               contrast=c("Condition","15","40"))
+res_salt22 <- results(dds,alpha = 0.05, independentFiltering = T,
+               contrast=c("Condition","22","40"))
+res_salt34 <- results(dds,alpha = 0.05, independentFiltering = T,
+               contrast=c("Condition","34","40"))
+res_Cu <- results(dds,alpha = 0.05, independentFiltering = T,
+               contrast=c("Condition","Cuivre","Temoins"))
+res_DVarS <- results(dds,alpha = 0.05, independentFiltering = T,
+               contrast=c("Condition","DVarS","Temoins"))
+res_BCS <- results(dds,alpha = 0.05, independentFiltering = T,
+               contrast=c("Condition","Chelateur","Temoins"))
+summary(res_salt15)
+summary(res_salt22)
+summary(res_salt34)
+summary(res_Cu)
+summary(res_DVarS)
+summary(res_BCS)
+
+res_DE.hist <- data.frame(names = c("salt.15","salt.22","salt.34",
+                                    "Cuivre", "DVarS","Chelateur"),
+                          values = c(915,781,448,179,493,31,
+                                 923,696,332,135,352,16),
+                          DE = c(rep("up",6),
+                                    rep("down",6)))
+# c(929,75,309,111,378,23,                                 967,208,413,77,268,11)
+
+ggplot(res_DE.hist, aes(fill=DE, y=values, x=names)) + 
+  geom_bar(position="dodge", stat="identity") +
+  xlab("Conditions") +
+  ylab("Nombre de gènes") +
+  theme(text = element_text(size = 18)) +
+  scale_fill_manual(values = c("#00BFC4","#F8766D"))
+
+plotMA(res_salt15)
+```
+
+```{r}
+### - 4. Heatmap ----
+ntd <- normTransform(dds)
+select <- order(rowMeans(counts(dds,normalized=TRUE)),
+                decreasing=TRUE)[1:100]
+df <- as.data.frame(colData(dds)[,c("Experiment","Condition")])
+pheatmap(assay(ntd)[select,], cluster_rows=FALSE, show_rownames=FALSE,
+         cluster_cols=FALSE, annotation_col=df)
+
+
+### - 5. PCA ----
+
+resOrdered <- res_salt15[order(res_salt15$pvalue),]
+resSig <- subset(resOrdered, padj < 0.05)
+resSig
+ddsMF <- dds
+vsd_ic <- vst(dds, blind=FALSE)
+rld_ic <- rlog(dds, blind=FALSE)
+head(assay(vsd_ic), 3)
+# this gives log2(n + 1)
+ntd_ic <- normTransform(dds)
+
+meanSdPlot(assay(ntd_ic))
+meanSdPlot(assay(vsd_ic))
+meanSdPlot(assay(rld_ic))
+
+pcaData<-plotPCA(vsd_ic, intgroup=c("Experiment", "Condition"), returnData=TRUE)
+percentVar<-round(100 * attr(pcaData, "percentVar"))
+
+my_colors <- c("#ccffff","#66ffff","#00ccff","#0099ff",
+               "#66ff66","#ff6600","#cc33ff","#00ccff")
+ggplot(pcaData, aes(PC1, PC2, color=Condition, shape=Experiment)) +
+  geom_point(size=3) +
+  xlab(paste0("PC1: ",percentVar[1],"% variance")) +
+  ylab(paste0("PC2: ",percentVar[2],"% variance")) +  
+  coord_fixed() +
+  geom_label_repel(aes(PC1, PC2, label = pcaData$name), fontface = 'bold',
+                   box.padding = unit(0.35, "lines"),
+                   point.padding = unit(0.5, "lines"),
+                   segment.color = 'grey50') +
+  scale_color_manual(values = my_colors)
+  
+```
+
+```{r}
+### - 6. Heatmap2 ----
+topVarGenes <- head( order( rowVars( assay(vsd_ic) ), decreasing=TRUE ), 100 )
+heatmap.2( assay(ntd_ic)[ topVarGenes, ], scale="row", cexRow = 0.1,
+           trace="none", #dendrogram="column", 
+           col = colorRampPalette( rev(brewer.pal(23, "RdBu")) )(255)) #,
+           #ColSideColors = c( comp="gray", incomp="darkgreen", naif="orange" )[
+            # colData(rld_ic)$Experience ],margins=c(12,8) )
+sampleDists <- dist( t( assay(vsd_ic) ) )
+as.matrix( sampleDists )[ 1:3, 1:3 ]
+sampleDistMatrix <- as.matrix( sampleDists )
+rownames(sampleDistMatrix) <- paste( vsd_ic$Experience, 
+                                     vsd_ic$Condition, sep="-" )
+colnames(sampleDistMatrix) <- NULL   
+colours = colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+par(mar = c(5, 5, 5, 5))
+heatmap.2( sampleDistMatrix, trace="none", col=colours,margins=c(6,8)) 
+
+
+```
+
+## The study of the copper effect
+
+```{r}
+infos_Cu <- infos[c(13:15,17:24),]
+data_count.Cu <- data_count.int[,c(13:15,17:24)]
+
+##############################################
+
+## Checking name between the 2 dataframe
+all(colnames(data_count.Cu) %in% rownames(infos_Cu))
+
+## Are they in the same order
+all(colnames(data_count.Cu) == rownames(infos_Cu))
+##############################################
+#### - 1. On construit la matrice pour Desq2 ----
+dds.Cu <- DESeqDataSetFromMatrix(countData = data_count.Cu,
+                              colData = infos_Cu,
+                              design = ~ Condition)
+dds.Cu # 4161 genes
+## pre-filtering: removing rows with low gene counts
+#  keeping rows that have a least 10 reads total
+keep <- rowSums(counts(dds.Cu)) >= 10
+dds.Cu <- dds.Cu[keep,]
+dds.Cu #4048 genes
+
+### - 2. Run DESeq2 ----
+dds.Cu <- DESeq(dds.Cu)
+## Puis on regarde chaque conditions
+res_Cu.Cu <- results(dds.Cu,alpha = 0.05,
+                     contrast=c("Condition","Cuivre","Temoins"))
+res_Cu.DVarS <- results(dds.Cu,alpha = 0.05,
+                     contrast=c("Condition","DVarS","Temoins"))
+res_Cu.BCS <- results(dds.Cu,alpha = 0.05,
+                     contrast=c("Condition","Chelateur","Temoins"))
+```
+
+```{r, fig.width=6, fig.height=5}
+### - 5. PCA ----
+
+resOrdered <- res_Cu.Cu[order(res_Cu.Cu$pvalue),]
+resSig <- subset(resOrdered, padj < 0.05)
+resSig
+ddsMF <- dds.Cu
+vsd.Cu <- vst(dds.Cu, blind=FALSE)
+rld.Cu <- rlog(dds.Cu, blind=FALSE)
+head(assay(vsd.Cu), 3)
+# this gives log2(n + 1)
+ntd.Cu <- normTransform(dds.Cu)
+
+meanSdPlot(assay(ntd.Cu))
+meanSdPlot(assay(vsd.Cu))
+meanSdPlot(assay(rld.Cu))
+
+pcaData<-plotPCA(vsd.Cu, intgroup=c("Experiment", "Condition"), returnData=TRUE)
+percentVar<-round(100 * attr(pcaData, "percentVar"))
+my_colors <- c("#66ff66","#ff6600","#cc33ff","#00ccff")
+ggplot(pcaData, aes(PC1, PC2, color=Condition, shape=Experiment)) +
+  geom_point(size=3) +
+  xlab(paste0("PC1: ",percentVar[1],"% variance")) +
+  ylab(paste0("PC2: ",percentVar[2],"% variance")) +  
+  coord_fixed() +
+  geom_label_repel(aes(PC1, PC2, label = pcaData$name), fontface = 'bold',
+                   box.padding = unit(0.35, "lines"),
+                   point.padding = unit(0.5, "lines"),
+                   segment.color = 'grey50') +
+  scale_color_manual(values = my_colors)
+
+
+### - 7. Volcano plot ----
+tmp<-as.data.frame(res_Cu.Cu)
+de.Cu <- tmp[complete.cases(tmp), ]
+tmp<-as.data.frame(res_Cu.DVarS)
+de.DVarS <- tmp[complete.cases(tmp), ]
+tmp<-as.data.frame(res_Cu.BCS)
+de.BCS <- tmp[complete.cases(tmp), ]
+
+
+plot.volcano(de.Cu)
+plot.volcano(de.DVarS)
+plot.volcano(de.BCS)
+```
+
+```{r}
+### - 9. Diff expression results ----
+## Cuivre
+de.Cu$diffexpressed <- "NO"
+de.Cu$diffexpressed[de.Cu$log2FoldChange > 0.6 & de.Cu$padj < 0.05] <- "UP"
+de.Cu$diffexpressed[de.Cu$log2FoldChange < -0.6 & de.Cu$padj < 0.05] <- "DOWN"
+de.Cu$delabel <- NA
+#de.Cu$delabel[de.Cu$diffexpressed != "NO"] <- de.Cu$gene_symbol[de.Cu$diffexpressed != "NO"]
+DiffExprCu<-de.Cu[de.Cu$padj < 0.05,]
+DiffExprCu<-DiffExprCu[order(DiffExprCu$log2FoldChange),]
+## DVarS
+de.DVarS$diffexpressed <- "NO"
+de.DVarS$diffexpressed[de.DVarS$log2FoldChange > 0.6 & de.DVarS$padj < 0.05] <- "UP"
+de.DVarS$diffexpressed[de.DVarS$log2FoldChange < -0.6 & de.DVarS$padj < 0.05] <- "DOWN"
+de.DVarS$delabel <- NA
+#de.DVarS$delabel[de.DVarS$diffexpressed != "NO"] <- de.DVarS$gene_symbol[de.DVarS$diffexpressed != "NO"]
+DiffExprDVarS<-de.DVarS[de.DVarS$padj < 0.05,]
+DiffExprDVarS<-DiffExprDVarS[order(DiffExprDVarS$log2FoldChange),]
+## Chelateur
+de.BCS$diffexpressed <- "NO"
+de.BCS$diffexpressed[de.BCS$log2FoldChange > 0.6 & de.BCS$padj < 0.05] <- "UP"
+de.BCS$diffexpressed[de.BCS$log2FoldChange < -0.6 & de.BCS$padj < 0.05] <- "DOWN"
+de.BCS$delabel <- NA
+#de.BCS$delabel[de.BCS$diffexpressed != "NO"] <- de.BCS$gene_symbol[de.BCS$diffexpressed != "NO"]
+DiffExprBCS<-de.BCS[de.BCS$padj < 0.05,]
+DiffExprBCS<-DiffExprBCS[order(DiffExprBCS$log2FoldChange),]
+
+
+## Now we merge them together
+df_DiffExpr<-data.frame(tmp=rep("NA",dim(dds.Cu)[1]  ))
+row.names(df_DiffExpr)<-row.names(dds.Cu)
+df_DiffExpr<-merge(df_DiffExpr,DiffExprCu["log2FoldChange"],by="row.names",all = T)
+colnames(df_DiffExpr)<-c("gene","tmp","Cuivre")
+df_DiffExpr$tmp<-NULL
+df_DiffExpr<-merge(df_DiffExpr,DiffExprDVarS["log2FoldChange"],by.x="gene",by.y="row.names",all = T)
+df_DiffExpr<-merge(df_DiffExpr,DiffExprBCS["log2FoldChange"],by.x="gene",by.y="row.names",all = T)
+colnames(df_DiffExpr)<-c("gene","Cuivre","DVarS","Chelateur")
+df_DiffExpr[is.na(df_DiffExpr)]<-0
+row.names(df_DiffExpr) <- df_DiffExpr$gene
+df_DiffExpr<-df_DiffExpr[-1]
+
+df_DiffExpr[] <- lapply(df_DiffExpr, function(x) {
+  if(is.factor(x)) as.numeric(as.character(x)) else x
+})
+sapply(df_DiffExpr, class)
+df_DiffExpr.Cu<-df_DiffExpr[rowSums(df_DiffExpr[])!=0,]
+mx_DiffExpr.Cu<-as.matrix(df_DiffExpr.Cu)
+
+
+## Visualisation des resultats
+heatmap.2( mx_DiffExpr.Cu, scale="row", srtCol = -45, adjCol = c(.1, .5),
+           trace="none", dendrogram="row", Colv = F, density.info = "none",
+           col = colorRampPalette( rev(brewer.pal(9, "RdBu")) )(255),
+           ColSideColors = c( Cuivre="gray", DVarS="darkgreen", Chelateur="orange")[
+             colnames(df_DiffExpr.Cu)],margins=c(12,8) )
+
+```
+
+```{r}
+
+gene_heat.Cuivre<-heatmap.2( mx_DiffExpr.Cu, srtCol = -45, adjCol = c(.1, .5),
+           dendrogram="row", Colv = F,trace="none", density.info = "none",# scal = "row",
+           #col = colorRampPalette( rev(brewer.pal(9, "RdBu")) )(255),
+           col = colorRampPalette( c("blue","white","red") )(299),
+           breaks = c(seq(-4,-0.6,length=100),seq(-0.59,0.59,length=100),seq(0.6,4,length=100)),
+           ColSideColors = colorRampPalette(c("white","cadetblue2"), 
+                                            space = "rgb")(3) ,margins=c(5,8),
+           ylab="Genes", xlab="Samples")
+#write.csv2(mx_DiffExpr.Cu[gene_heat.Cuivre$rowInd,], file = "../R_results/genes_GO_cuivre_TPM.csv",row.names = T,quote=F)
+```
+
+## The Study of the salinity effect
+
+```{r}
+infos_Salt <- infos[c(1:12),]
+data_count.Salt <- data_count.int[,c(1:12)]
+
+##############################################
+
+## Checking name between the 2 dataframe
+all(colnames(data_count.Salt) %in% rownames(infos_Salt))
+
+## Are they in the same order
+all(colnames(data_count.Salt) == rownames(infos_Salt))
+##############################################
+#### - 1. On construit la matrice pour Desq2 ----
+dds.Salt <- DESeqDataSetFromMatrix(countData = data_count.Salt,
+                              colData = infos_Salt,
+                              design = ~ Condition)
+dds.Salt # 4161 genes
+## pre-filtering: removing rows with low gene counts
+#  keeping rows that have a least 10 reads total
+keep <- rowSums(counts(dds.Salt)) >= 10
+dds.Salt <- dds.Salt[keep,]
+dds.Salt #4027 genes
+
+### - 2. Run DESeq2 ----
+dds.Salt <- DESeq(dds.Salt)
+## Puis on regarde chaque conditions
+res_Salt.15 <- results(dds.Salt,alpha = 0.05,
+                     contrast=c("Condition","15","40"))
+res_Salt.22 <- results(dds.Salt,alpha = 0.05,
+                     contrast=c("Condition","22","40"))
+res_Salt.34 <- results(dds.Salt,alpha = 0.05,
+                     contrast=c("Condition","34","40"))
+```
+
+```{r, fig.width=6, fig.height=4}
+### - 5. PCA ----
+
+resOrdered <- res_Salt.22[order(res_Salt.22$pvalue),]
+resSig <- subset(resOrdered, padj < 0.05)
+resSig
+ddsMF <- dds.Salt
+vsd.Salt <- vst(dds.Salt, blind=FALSE)
+rld.Salt <- rlog(dds.Salt, blind=FALSE)
+head(assay(vsd.Salt), 3)
+# this gives log2(n + 1)
+ntd.Salt <- normTransform(dds.Salt)
+
+meanSdPlot(assay(ntd.Salt))
+meanSdPlot(assay(vsd.Salt))
+meanSdPlot(assay(rld.Salt))
+
+pcaData<-plotPCA(vsd.Salt, intgroup=c("Experiment", "Condition"), returnData=TRUE)
+percentVar<-round(100 * attr(pcaData, "percentVar"))
+my_colors <- c("#66ffff","#4ddbff","#00ccff","#0099ff")
+ggplot(pcaData, aes(PC1, PC2, color=Condition, shape=Experiment)) +
+  geom_point(size=3) +
+  xlab(paste0("PC1: ",percentVar[1],"% variance")) +
+  ylab(paste0("PC2: ",percentVar[2],"% variance")) +  
+  coord_fixed() +
+  geom_label_repel(aes(PC1, PC2, label = pcaData$name), fontface = 'bold',
+                   box.padding = unit(0.35, "lines"),
+                   point.padding = unit(0.5, "lines"),
+                   segment.color = 'grey50') +
+  scale_color_manual(values = my_colors)
+
+
+### - 7. Volcano plot ----
+tmp<-as.data.frame(res_Salt.15)
+de.15 <- tmp[complete.cases(tmp), ]
+tmp<-as.data.frame(res_Salt.22)
+de.22 <- tmp[complete.cases(tmp), ]
+tmp<-as.data.frame(res_Salt.34)
+de.34 <- tmp[complete.cases(tmp), ]
+
+
+plot.volcano(de.15)
+plot.volcano(de.22)
+plot.volcano(de.34)
+```
+
+```{r}
+### - 9. Diff expression results ----
+## 15
+de.15$diffexpressed <- "NO"
+de.15$diffexpressed[de.15$log2FoldChange > 0.6 & de.15$padj < 0.05] <- "UP"
+de.15$diffexpressed[de.15$log2FoldChange < -0.6 & de.15$padj < 0.05] <- "DOWN"
+de.15$delabel <- NA
+#de.15$delabel[de.15$diffexpressed != "NO"] <- de.15$gene_symbol[de.15$diffexpressed != "NO"]
+DiffExpr15<-de.15[de.15$padj < 0.05,]
+DiffExpr15<-DiffExpr15[order(DiffExpr15$log2FoldChange),]
+## 22
+de.22$diffexpressed <- "NO"
+de.22$diffexpressed[de.22$log2FoldChange > 0.6 & de.22$padj < 0.05] <- "UP"
+de.22$diffexpressed[de.22$log2FoldChange < -0.6 & de.22$padj < 0.05] <- "DOWN"
+de.22$delabel <- NA
+#de.22$delabel[de.22$diffexpressed != "NO"] <- de.22$gene_symbol[de.22$diffexpressed != "NO"]
+DiffExpr22<-de.22[de.22$padj < 0.05,]
+DiffExpr22<-DiffExpr22[order(DiffExpr22$log2FoldChange),]
+## 34
+de.34$diffexpressed <- "NO"
+de.34$diffexpressed[de.34$log2FoldChange > 0.6 & de.34$padj < 0.05] <- "UP"
+de.34$diffexpressed[de.34$log2FoldChange < -0.6 & de.34$padj < 0.05] <- "DOWN"
+de.34$delabel <- NA
+#de.34$delabel[de.34$diffexpressed != "NO"] <- de.34$gene_symbol[de.34$diffexpressed != "NO"]
+DiffExpr34<-de.34[de.34$padj < 0.05,]
+DiffExpr34<-DiffExpr34[order(DiffExpr34$log2FoldChange),]
+
+
+## Now we merge them together
+df_DiffExpr<-data.frame(tmp=rep("NA",dim(dds.Salt)[1]  ))
+row.names(df_DiffExpr)<-row.names(dds.Salt)
+df_DiffExpr<-merge(df_DiffExpr,DiffExpr15["log2FoldChange"],by="row.names",all = T)
+colnames(df_DiffExpr)<-c("gene","tmp","15")
+df_DiffExpr$tmp<-NULL
+df_DiffExpr<-merge(df_DiffExpr,DiffExpr22["log2FoldChange"],by.x="gene",by.y="row.names",all = T)
+df_DiffExpr<-merge(df_DiffExpr,DiffExpr34["log2FoldChange"],by.x="gene",by.y="row.names",all = T)
+colnames(df_DiffExpr)<-c("gene","15","22","34")
+df_DiffExpr[is.na(df_DiffExpr)]<-0
+row.names(df_DiffExpr) <- df_DiffExpr$gene
+df_DiffExpr<-df_DiffExpr[-1]
+
+df_DiffExpr[] <- lapply(df_DiffExpr, function(x) {
+  if(is.factor(x)) as.numeric(as.character(x)) else x
+})
+sapply(df_DiffExpr, class)
+df_DiffExpr.Salt<-df_DiffExpr[rowSums(df_DiffExpr[])!=0,]
+mx_DiffExpr.Salt<-as.matrix(df_DiffExpr.Salt)
+
+
+## Visualisation des resultats
+heatmap.2( mx_DiffExpr.Salt, scale="row", srtCol = -45, adjCol = c(.1, .5),
+           trace="none", dendrogram="row", Colv = F, density.info = "none",
+           col = colorRampPalette( rev(brewer.pal(9, "RdBu")) )(255),
+           ColSideColors = c( Salt.15="gray", Salt.22="darkgreen", Salt.34="orange")[
+             colnames(df_DiffExpr.Salt)],margins=c(12,8) )
+
+```
+
+```{r}
+
+gene_heat.salt<-heatmap.2( mx_DiffExpr.Salt, srtCol = -45, adjCol = c(.1, .5),
+           dendrogram="row", Colv = F,trace="none", density.info = "none",
+           col = colorRampPalette( c("blue","white","red") )(299),
+           breaks = c(seq(-6,-0.6,length=100),seq(-0.59,0.59,length=100),seq(0.6,6,length=100)),
+           ColSideColors = colorRampPalette(c("white","cadetblue2"), 
+                                            space = "rgb")(3) ,margins=c(4,8),
+           ylab="Genes", xlab="Samples")
+#write.csv2(mx_DiffExpr.Salt[gene_heat.salt$rowInd,], file = "../R_results/genes_GO_salt_15-22-34_TPM.csv",row.names = T,quote=F)
+```

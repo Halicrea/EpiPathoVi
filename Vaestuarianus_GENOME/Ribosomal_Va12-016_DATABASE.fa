@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>
+     - MicroScope - Web Interface System &amp; Specialized Databases
+    for (re)Annotation and Analysis of Microbial Genomes
+  </title>
+  <meta charset="iso-8859-1" />
+  <meta name="description" content="" />
+  <meta name="author" content="LABGeM" />
+  <meta name="keywords" content="microscope, mage, genomic, genome, microbial, bacterial, annotation, analysis, metabolism, rna-seq, platform, transcriptomic, mutant, variant" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Cache-Control" content="no-cache, must-revalidate" />
+  <meta http-equiv="Expires" content="Thu, 01 Jan 1970 00:00:00 GMT" />
+  
+
+  <link rel="canonical" href="" />
+
+    <!-- JQuery, JQuery-UI (the CSS has no SRI), JQuery-Migrate, QTip2, JEditable -->
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
+    <script src="https://code.jquery.com/jquery-migrate-1.2.1.min.js" integrity="sha256-HmfY28yh9v2U4HfIXC+0D6HCdWyZI42qjaiCFEJgpo0=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.0/jquery.qtip.min.js" integrity="sha256-jffSxovmZxOU5K+i27VpMMzSmFGuqKiYzmFo+0sba10=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/qtip2/2.2.0/jquery.qtip.min.css" integrity="sha256-SjzMC5ALEHxcwSVGmVxaN3u6GctDjMatNXq/MGoDmAg=" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jeditable.js/1.7.3/jeditable.min.js" integrity="sha256-t24FNuWuYHqEU9wt16yNCHebqT6PhwARPuLBEG8x/Xk=" crossorigin="anonymous"></script>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap-reboot.min.css" integrity="sha256-pz64SJ9vnWkyhtOo7mtiOekWuFo7YIGXrzXjElYzcWA=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap-grid.min.css" integrity="sha256-ncgwwFXWgRIKh7g/Cqt9Pqph8dsoCIAk4GByMS/Y55I=" crossorigin="anonymous" />
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js" integrity="sha384-feJI7QwhOS+hwpX2zkaeJQjeiwlhOP+SdQDqhgvvo1DsjtiSQByFdThsxO669S2D" crossorigin="anonymous"></script>
+
+    <!-- Datatables (with buttons, HTML 5 export and print) -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/ju/dt-1.10.18/b-1.5.6/b-html5-1.5.6/b-print-1.5.6/datatables.min.css"/>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/ju/dt-1.10.18/b-1.5.6/b-html5-1.5.6/b-print-1.5.6/datatables.min.js"></script>
+
+    <!-- JQuery cookiebar -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookiebar/1.0.5/jquery.cookiebar.css" integrity="sha256-0sES5wZOR6EG9wGJAitEtxi56FKPA7fTEXW3/7ZN5pI=" crossorigin="anonymous" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookiebar/1.0.5/jquery.cookiebar.min.js" integrity="sha256-eI4MPlCvhB1mbf32WMI21PAqlLs6vNOl5fe2sDlw224=" crossorigin="anonymous"></script>
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.0.3/css/font-awesome.min.css" integrity="sha256-sSwc2BH1TRG/3LXiNec5NKi4p6her7hSkRf5pbtkzPg=" crossorigin="anonymous" />
+
+    <!-- Typeahead and Bloodhound: needed for suggestion engine in web/javascript/lib/microscope !-->
+    <!-- It seems hard to include it with NPM so we use it with CDN (#6682) !-->
+    <!-- The CSS is ours !-->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/corejs-typeahead/1.2.1/typeahead.bundle.js"></script>
+    <link type="text/css" rel="stylesheet" media="screen" href="../web/css/typeahead.css" />
+
+    <!-- Misc. -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.1/modernizr.min.js" integrity="sha256-a2ACHIEW7dEBhkfsNqpx5Smiz6okSYPA7eB7pV6mFAg=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="../web/javascript/overlib.js"></script>
+    <script type="text/javascript" src="../web/javascript/overlib_positioncap.js"></script>
+
+    <!-- Our JS and CSS -->
+    <script type="text/javascript">
+    const PRIVACYNOTICE = "";
+    const PRIVACYNOTICE_VERSION = new Date("");
+    </script>
+    <script type="text/javascript" src="../web/javascript/common.js"></script>
+    <script type="text/javascript" src="../web/javascript/exec/exec.js"></script>
+    <script type="text/javascript" src="../web/javascript/movebact.js"></script>
+    <link type="text/css" rel="stylesheet" media="screen"  href="../web/css/main.css" />
+    <link type="text/css" rel="stylesheet" media="screen"  href="../web/css/default_theme.css" />
+
+    
+
+  <script type="text/javascript">
+    // Initialisation du nom de la fenetre pour les target
+    window.name = "";
+
+    // Construction des tableaux de paniers de genes
+    
+
+    // Systeme Toggle Show/Hide du menu gauche
+    $(document).ready(function () {
+      $('#toggle').hide();
+      banner_moving_bacteria();
+
+    });
+    // Tableaux initialisation formulaires du Search by Keywords tool
+    // 
+  </script>
+</head>
+
+<body onload="self.focus();waitPreloadPage();">
+  <span itemscope itemtype="http://schema.org/SoftwareApplication">
+    <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
+    <header id="header">
+      <div id="bannerup"></div>
+
+      <div id="banner" class="banner_img" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <div id="change_banner">
+          <div id="banner_bact" style="position: inherit; float: right; top: 15px; right: 120px;"></div>
+          <a itemprop="url" href="../home/index.php?wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78"><img style="position: absolute;" itemprop="image" src="../web/pictures/INSmicroscope_helix.png"
+              alt="microscopelogosmall" /></a>
+
+          
+            
+          <div id="headerorgname" class="A12 b"></div>
+
+          
+
+          
+
+          <div class="resizeMenu">
+            <!-- Debut Menu de Navigation -->
+            <label for="show-menu" class="show-menu"><img class="menubarimg" src="../web/pictures/menublu.png" alt="Menu" /></label>
+            <input type="checkbox" id="show-menu" role="button" />
+            <ul id="menuDeroulant">
+              
+              <li>
+                <h1 class="A12 b">
+                  <a href="../mage/index.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class=" " onclick="waitSubmitPage();">MaGe</a>
+                </h1>
+                <ul class="sousMenu">
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../mage/viewer.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Genome Browser</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../userpanel/displaypref.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Genome Browser Options</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../mage/doubloonGenes.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Identical Gene Names</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../mage/overlapCDS.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Overlapping CDS</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../mage/bilanAnnotationExpert.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Annotation Summary</a>
+                    </h2>
+                  </li>
+                  
+                </ul>
+              </li>
+              
+              <li>
+                <h1 class="A12 b">
+                  <a href="../genomic/index.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class=" " onclick="waitSubmitPage();">Genomic Tools</a>
+                </h1>
+                <ul class="sousMenu">
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../genomic/overview.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Genome Overview</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../genomic/cgview.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Circular Genome Viewer</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../genomic/syntenyTandem.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Tandem Duplications</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../genomic/classifEGGNOG.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >EGGNOG Classification</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../genomic/minGeneSet.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Minimal Gene Set</a>
+                    </h2>
+                  </li>
+                  
+                </ul>
+              </li>
+              
+              <li>
+                <h1 class="A12 b">
+                  <a href="../compgenomics/index.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="classforlongname " onclick="waitSubmitPage();">Comparative<br />Genomics</a>
+                </h1>
+                <ul class="sousMenu">
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../compgenomics/genoclust.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Genome Clustering</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../compgenomics/phyloprofil.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Gene Phyloprofile</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../compgenomics/genomicIsland.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Regions of Genomic Plasticity</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../compgenomics/panRGP.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Pan-genome RGPs</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../compgenomics/linePlotForm.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >LinePlot</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../compgenomics/fusfis.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Fusion / Fission</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../compgenomics/GOstats.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >PkGDB Synteny Statistics</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../compgenomics/RefSeqstats.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >RefSeq Synteny Statistics</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../compgenomics/pancoreTool.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Pan/Core-Genome</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../compgenomics/card.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Resistome</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../compgenomics/virulence.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Virulome</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../compgenomics/integron.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Integrons</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../compgenomics/macsyfinder.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Macromolecular Systems</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../compgenomics/prophages_defense_systems.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Prophages & Defense Systems</a>
+                    </h2>
+                  </li>
+                  
+                </ul>
+              </li>
+              
+              <li>
+                <h1 class="A12 b">
+                  <a href="../metabolism/index.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class=" " onclick="waitSubmitPage();">Metabolism</a>
+                </h1>
+                <ul class="sousMenu">
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../metabolism/kegg.php?region=G&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Kegg</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../metabolism/microcyc.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >MicroCyc</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../metabolism/metabolicprofil.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Metabolic Profiles</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../metabolism/pathwayCuration.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Pathway Curation</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../metabolism/antismash.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Secondary Metabolites</a>
+                    </h2>
+                  </li>
+                  
+                </ul>
+              </li>
+              
+              <li>
+                <h1 class="A12 b">
+                  <a href="../expdata/index.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="classforlongname " onclick="waitSubmitPage();">Experimental<br />Data</a>
+                </h1>
+                <ul class="sousMenu">
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../expdata/NGSProjectRNASeq.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >RNA-Seq analysis</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../expdata/NGSProjectEvo.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Variant profiling</a>
+                    </h2>
+                  </li>
+                  
+                </ul>
+              </li>
+              
+              <li>
+                <h1 class="A12 b">
+                  <a href="../search/index.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class=" " onclick="waitSubmitPage();">Search/Export</a>
+                </h1>
+                <ul class="sousMenu">
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../search/blast.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Blast &amp; Pattern Searches</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../search/keywords.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Search by Keywords</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../search/exportForm.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Download Data</a>
+                    </h2>
+                  </li>
+                  
+                </ul>
+              </li>
+              
+              <li>
+                <h1 class="A12 b">
+                  <a href="../userpanel/index.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class=" " onclick="waitSubmitPage();">User Panel</a>
+                </h1>
+                <ul class="sousMenu">
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../userpanel/displaypref.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Display Preferences</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../userpanel/genesbasket.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Gene Carts</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../userpanel/register.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Register new account</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../userpanel/requestpassword.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Lost Password?</a>
+                    </h2>
+                  </li>
+                  
+                </ul>
+              </li>
+              
+              <li>
+                <h1 class="A12 b">
+                  <a href="../about/index.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class=" " onclick="waitSubmitPage();">About</a>
+                </h1>
+                <ul class="sousMenu">
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../about/services.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Submit your data to MicroScope</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../about/tutorial.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" target='_blank'>Tutorial Access</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../about/collabprojects.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Collaborative Projects</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../about/protrainings.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" target='_blank'>Professional Trainings</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../about/publications.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Related Publications</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../about/labgem.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" target='_blank'>LABGeM</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../about/contact.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Contact Us</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../about/guestbook.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" >Guest Book</a>
+                    </h2>
+                  </li>
+                  
+                  <li>
+                    <h2 class="A10 b">
+                      <a href="../about/blogMicroscope.php?&wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" class="" onclick="waitSubmitPage();" target='_blank'>MicroScope's Blog</a>
+                    </h2>
+                  </li>
+                  
+                </ul>
+              </li>
+              
+            </ul>
+            <!-- Fin Menu de Navigation -->
+          </div>
+        </div>
+      </div>
+      <div id="bannerbottom">
+        <div id="prepage" class="loadingdata A12 i black">
+          <img src="../web/pictures/loadingdata.gif" style="vertical-align:middle;padding-right:15px;" alt="loadingdata" />Loading
+          Data ...
+        </div>
+      </div>
+
+      <table id="navmenu">
+        <tr>
+          <td style="vertical-align:top;text-align:left;" class="paddingleft10 nowrap">
+            <a href="../home/index.php?wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" id="homelink" title="MicroScope Home" onclick="waitSubmitPage();">
+            </a>
+          </td>
+          <td style="vertical-align:top;text-align:left;" class="A10 b paddingtop5 nowrap black">
+            
+            
+          </td>
+          <td style="width:100%;">
+            <noscript>
+              <div class="cadre_alert A12 b" style="word-wrap:break-word;">
+                Javascript must be enabled on your web browser to take
+                advantage <br />
+                of MicroScope's functionalities
+              </div>
+            </noscript>
+          </td>
+          <td>
+            <a itemprop="url" href="?wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" target="Help" title="Tutorial access related to this webpage">
+              <img id="butonhelpimg" draggable="true" ondragstart="drag(event)" style="width: 25px;vertical-align: top;position: absolute;right: 0px;padding-top: 0px;" itemprop="image" src="../web/pictures/helpbutton.png" />
+            </a>
+          </td>
+        </tr>
+      </table>
+    </header>
+    <div id="toggle" class="hidden">
+      <a id="togglerclose" title="Show/Hide left menu" style="float:right;"><img src="../web/pictures/menuLeft.png" alt="Show/Hide" /></a>
+
+      
+
+      
+    </div>
+    <!-- Debut Content -->
+    <div id="content" class=" ">
+      <a id="toggler" title="Show/Hide left menu"><img src="../web/pictures/menuRight.png" alt="Show/Hide" /></a>
+
+      <div id="headertitles" class="black">
+        
+                    <h3 class="A18 b"> 
+                    <br />
+                     </h3>
+
+        <h4 class="A12 b"></h4>
+        <div class="A16 b"></div>
+      </div>
+
+      
+
+      
+<div class="cadre_alert_empty redstrong b A24" style="margin:0 auto;">512 ERROR</div>
+<div class="cadre_alert marginleft30 A14 b" style="margin:0 auto;text-align:center;">Bad value for sequence extraction.<br /><br />
+<a href="../home/index.php?wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" title="Back Home" class="white" style="text-decoration:underline;margin:0 auto;" >Go back Homepage</a>
+</div>  
+
+
+	</div>
+	<!-- Fin Content  (voir header/headerpopup pour debut) -->
+    
+
+	
+
+	<!-- Debut pied  -->
+	<div id="footer" class="container-fluid" style="text-align:center;">
+		<div class="cadre_footer">
+            <div class="row justify-content-center">
+			<span class="cadre_logo"><a href="https://labgem.genoscope.cns.fr" target ="_blank" title="LaBGEM website"><img alt="Logo" src="../web/pictures/GENOSCOPE-LABGeM_logo100.png" height="60" width="60" /></a></span>		
+			<span class="cadre_logo"><a href="https://www.genoscope.cns.fr/" target ="_blank" title="Genoscope website"><img alt="Logo" src="../web/pictures/genoscope_logo100.png" height="65" width="65" /></a></span>
+			<span class="cadre_logo"><a href="http://www.cea.fr/drf/ifrancoisjacob" target ="_blank" title="CEA - François Jacob Institute of biology"><img alt="Logo" src="../web/pictures/cea_newlogo.png" height="50" width="60" /></a></span>
+			<span class="cadre_logo"><a href="http://www.cnrs.fr" target ="_blank" title="CNRS website"><img alt="Logo" src="../web/pictures/cnrs_logo100.png" height="50" width="50" /></a></span>
+			<span class="cadre_logo"><a href="https://www.univ-evry.fr/" target ="_blank" title="Evry university website"><img alt="Logo" src="../web/pictures/univ-evry_logo100.png" height="65" /></a></span>
+			<span class="cadre_logo"><a href="http://www.genopole.fr/?lang=en" target ="_blank" title="Genopole website"><img alt="Logo" src="../web/pictures/genopole_logo100.png" height="70" width="70" /></a></span>
+            </div>
+			<div class="cadre_contact row">
+                <div class="col-sm"></div>
+
+                <div class="col-sm">
+			    <span class="A12 b"> &copy; 2002-2023
+				    <span itemprop="author" itemscope itemtype="http://schema.org/Person"><span itemprop="name">
+				        LABGeM</span></span> - v <span itemprop="softwareVersion">3.16.1</span> - </span>
+                                <a href="../about/termsofuse.php?wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" title="Terms of Use" class="A12 marginright10">Terms of Use</a>
+                <span class="A12 b"> - </span>
+                <a href="../about/privacynotice.php?wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" title="Privacy Notice" class="A12 marginright10">Privacy Notice</a>
+                <span class="A12 b"> - </span>
+                <a href="../about/microscopecharter.php?wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" title="MicroScope Charter" class="A12 marginright10">MicroScope Charter</a>
+                <span class="A12 b"> - </span>
+				<a href="../about/contact.php?wwwpkgdb=a4b59f0653558c0b940fc8c5db255b78" title="Contact us" class="A12">Contact Us</a>
+                </div>
+
+                <div class="col-sm">
+				<a href="#" class="menuleft_OFF A10 b" onclick="window.scrollTo(0,0); return false" style="float:right;margin-right:10px;">Back to Top</a>
+				<a href="https://labgem.genoscope.cns.fr/category/microscope-announce/feed/" target ="_blank" title="Subscribe to RSS feeds" style="float:right;margin-right:10px;"><img alt="Logo" src="../web/pictures/rss.png" height="15" width="15" /></a>
+                </div>
+			</div>
+ 			
+		</div>
+		<div id="bannerfooter" style="text-align:left;"> </div>
+	</div>
+	<!-- Fin pied  -->	
+   
+<!-- Google analytics -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-26033171-1', 'auto');
+  ga('send', 'pageview');
+</script>
+<!-- End Google analytics -->
+	
+	
+</span>	
+</body>
+</html>
+
+
